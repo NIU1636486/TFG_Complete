@@ -120,16 +120,17 @@ PIPELINES FOR ANALOG FILM RESTORATION}
     \includegraphics[width=\textwidth]{img/Portada.pdf}
     
     \captionsetup{type=figure}
-    \captionof{figure}{Overview of the two restoration strategies: a two-stage pipeline with artifact segmentation and inpainting, and an end-to-end transformer model that restores degraded frames directly.}
+    \captionof{figure}{Overview of the two restoration strategies explored in this work. Left: a modular two-stage pipeline combining artifact segmentation and mask-guided inpainting using RePaint. Right: an end-to-end transformer-based architecture (Restormer) that directly maps degraded frames to restored outputs.}
     \label{fig:portada}
 \end{center}
 }
 
-\blfootnote{$\bullet$ E-mail de contacte: pol.riubrogent@autonoma.cat}
-\blfootnote{$\bullet$ Treball tutoritzat per: Ramon Baldrich Caselles (CVC, Color in Context)} \blfootnote{$\bullet$ Curs 2024/25}
+
 \end{@twocolumnfalse}]
-
-
+\blfootnote{$\bullet$ E-mail de contacte: pol.riubrogent@autonoma.cat}
+\blfootnote{$\bullet$ Treball tutoritzat per: Ramon Baldrich Caselles (CVC, Color in Context)}
+\blfootnote{$\bullet$ Curs 2024/25}
+\vspace*{-2em}
 \section{Introduction}
 \lettrine[lines=3]{T}{he} restoration of analog film footage, such as 35mm prints, remains a labor-intensive and time-consuming process. Traditional workflows rely on expert technicians manually cleaning reels or correcting scans frame by frame, often with the aid of rule-based software tools. While this yields curated results, especially when assisted by film specialists, it can take weeks or months to restore a single reel, rendering large-scale archival efforts prohibitively slow and expensive. As a result, restoration remains accessible primarily to well-funded institutions. The advent of deep learning has opened new possibilities to automate key steps in this process by learning to reconstruct damaged film regions while preserving historical and aesthetic fidelity. \\
 Most deep learning approaches to image restoration have focused on generic tasks like denoising, super-resolution, or deraining (citation needed). Although architectures such as Restormer, LaMa, and DeepRemaster have demonstrated strong performance on these tasks, they are not tailored to the distinctive challenges of analog film degradation. In archival contexts, the objective is not merely to remove visible defects but to preserve the film’s intrinsic visual identity, most notably its characteristic grain. However, existing methods often smooth out this fine-grained structure, compromising perceptual fidelity. Moreover, there is limited exploration of the comparative effectiveness of different architectural paradigms, such as modular versus end-to-end designs. \\
@@ -140,19 +141,20 @@ To address this challenge, the remainder of the work is organized as follows. Fi
 Before the advent of digital tools, analog film restoration was an entirely manual endeavor. Archivists physically cleaned and reconditioned film reels to remove dust, mold, and dirt, often using specialized solvents and lint-free wipes. Torn or decayed frames were painstakingly repaired by splicing breaks with tape or glue, and severely damaged sequences could be salvaged by optical printing – re-photographing each frame to produce a new copy that bypasses scratches or warped sections. With the transition to scanned film, classical digital techniques emerged to accelerate restoration. Early software systems deployed rule-based defect detectors and morphological filters to identify artifacts like dust specks and vertical scratches, followed by image inpainting or interpolation to fill in those regions. While these hand-crafted pipelines improved consistency over purely manual repair, they often required expert tuning and struggled with complex degradations, setting the stage for data-driven restoration approaches in subsequent work. \cite{croci2015advanced}
 
 \subsection{Restoration of Analog Film Scans}
-Restoring analog film scans poses unique challenges due to the need to remove defects like dust, scratches, and dirt without erasing the fine-grained texture that defines their aesthetic. Existing methods, ranging from GAN-based inpainting \cite{gan} to CNNs optimized for PSNR and SSIM, often yield visually clean results but treat film grain as noise, leading to overly smoothed outputs that undermine archival fidelity. Furthermore, few works systematically compare architectural paradigms, leaving open questions about the relative merits of modular versus end-to-end approaches. \cite{survey} \\ 
+Restoring analog film scans poses unique challenges due to the need to remove defects like dust, scratches, and dirt without erasing the fine-grained texture that defines their aesthetic. Existing methods, ranging from GAN-based inpainting \cite{gan} to CNNs optimized for PSNR and SSIM, often yield visually clean results but treat film grain as noise, leading to overly smoothed outputs that undermine archival fidelity. Furthermore, few works systematically compare architectural paradigms, leaving open questions about the relative merits of modular versus end-to-end approaches. \cite{survey} 
+\vspace*{-0.8em}
 \subsection{Modular Restoration: Segmentation Followed by Inpainting}
-The FILM-AA framework exemplifies a modular strategy, employing a two-stage pipeline: a segmentation network trained on high-resolution labeled scans identifies damaged regions, and an inpainting model restores only those areas. This approach emphasizes interpretability and minimal intervention, key values in heritage restoration, by preserving untouched content and offering fine control. However, it does not explore architectural variants or assess the integration of advanced generative models, limiting its adaptability and generalizability.\\
+The FILM-AA framework exemplifies a modular strategy, employing a two-stage pipeline: a segmentation network trained on high-resolution labeled scans identifies damaged regions, and an inpainting model restores only those areas. This approach emphasizes interpretability and minimal intervention, key values in heritage restoration, by preserving untouched content and offering fine control. However, it does not explore architectural variants or assess the integration of advanced generative models, limiting its adaptability and generalizability.
+\vspace*{-0.8em}
 \subsection{Transformer-Based Approaches for Image Restoration: Restormer}
 In contrast, transformer-based vision models have recently achieved state-of-the-art results in generic restoration tasks such as denoising, deblurring, and super-resolution. Restormer is a leading example, designed for high-resolution image restoration through a hierarchical encoder-decoder architecture with multi-scale skip connections. Its ability to model both global structure and fine-grained texture makes it a promising candidate for analog film restoration. \\
 Unlike modular approaches, Restormer operates end-to-end, implicitly learning to localize and correct degradations without auxiliary supervision. This implicit design offers flexibility but risks removing authentic features such as film grain if the learned prior becomes overly aggressive. \\
 Restormer follows the principles of Vision Transformers (ViTs)~\cite{dosovitskiy2020image}, processing images via patch embeddings and multi-head self-attention across transformer layers. Unlike ViTs for classification, which collapse spatial information, Restormer retains resolution throughout, making it well-suited for dense restoration tasks.
-
-
 \section{Dataset}
 \label{sec:dataset}
 A critical component of this project is the construction of a dataset suitable for training and validating a model capable of identifying and restoring visual artifacts in digitalized film footage, while preserving the inherent characteristics of celluloid film such as its grain structure. Unlike many existing image restoration datasets, such as LSDIR, which are primarily focused on tasks like super-resolution and general noise removal, the current objective demands a domain-specific dataset centered on real-world film degradation. These degradations include dust, dirt, hairs, and/or scratches, which are not unique to analog film but are also integral to the authenticity of the viewing experience. \\
 Due to the lack of publicly available, large-scale datasets tailored to this specific restoration task, a synthetic dataset has been created as the primary training resource. This dataset construction process was designed to ensure both the visual realism and structural diversity necessary to support the development and evaluation of the two distinct restoration architectures proposed in this work. As will be explained in later sections, these architectures require differently structured data splits and target outputs, even though they share a common generation pipeline. In this section, two datasets will be introduced: a synthetic dataset created specifically for this task and the Documartica dataset, an externally provided dataset created similarly, but with unrelated images. Example images of each dataset can be seen in Appendix A.
+\vspace*{-0.5em}
 \subsection{Synthetic Dataset}
 The core dataset comprises high-resolution film frames artificially degraded with pixel-accurate artifact masks. Clean frames were extracted from a curated set of uncompressed Blu-ray restorations of 35mm films from the 1960s–1980s, selected for their faithful analog texture and visible grain. \\ To encourage generalization, the dataset was split using a stratified, non-random strategy: the test set includes full films and styles (e.g., animation) excluded from training. This ensures performance is evaluated not only on unseen frames but also on novel content and aesthetic domains.
 \subsubsection{Artifact generation}
@@ -176,6 +178,7 @@ Overview of the proposed two-stage restoration architecture. A U-Net-based model
 To improve the visual realism of the composite images and reduce overfitting to sharp, high-contrast edges, the artifact masks were post-processed by applying a Gaussian blur around their borders. This blurring simulates the more natural and diffuse integration of artifacts into real film material and encourages the model to lean towards broader contextual features.
 \subsection{Documartica Dataset}
 In addition to the primary synthetic dataset, this work leverages a secondary dataset for pretraining purposes. Proved through direct contact from the authors of the FILM-AA paper, this dataset was generated using the same artifact simulation methodology described above, but was applied to a different base: high-resolution scans of 35mm still film frames from various, unspecified sources. \\ Although the Documartica dataset does not directly match the final application domain of degraded motion picture footage, it shares many visual features that are relevant for learning transferable representations.
+\vspace*{-0.5em}
 \section{Two-Stage Arquitecture}
 This work adopts a modular architecture for film restoration, explicitly separating defect localization and image reconstruction into two sequential stages. The first stage employs a segmentation network to identify damaged regions in the input frame by generating a binary mask, while the second stage uses a generative inpainting model to selectively restore only the corrupted areas, leaving intact regions unaltered. This design emulates traditional restoration workflows and provides enhanced control, minimizing the risk of unnecessary modifications and preserving subtle features such as film grain. A schematic overview is shown in Fig.~\ref{fig:two-stage}. The remainder of this section focuses on the segmentation component, as the inpainting stage (based on RePaint) is used without modification. \\
 This modular separation also offers important methodological benefits. By decoupling damage detection from content generation, it allows for independent supervision of the segmentation task, increasing transparency and interpretability in what the model chooses to modify. Additionally, it facilitates the integration of domain-agnostic, state-of-the-art generative models, such as RePaint, without requiring end-to-end retraining, thereby enhancing flexibility and extensibility. In contrast to end-to-end architectures that regress directly from corrupted to restored frames, this design aligns more closely with archival restoration principles: intervene only when necessary and preserve the original wherever possible.
@@ -189,6 +192,7 @@ To enhance the network's focus on relevant regions, Attention U-Net \cite{attune
 The Recurrent Residual Attention U-Net~\cite{r2attunet} extends previous architectures by integrating residual and recurrent connections into both encoder and decoder paths. Recurrent convolutions iteratively refine features, enabling the model to capture temporal dependencies even from single frames, while residual links stabilize training and support deeper representations. This design is particularly effective for restoring faint or textured artifacts that require broader contextual reasoning across spatial scales.
 \subsubsection{Training Objective}
 All models are trained using a standard Binary Cross Entropy (BCE) \cite{bceloss }loss function:
+
 \begin{equation*}
     \mathcal{L}_{BCE} = -\frac{1}{N} \sum^N_{i=1}[y_ilog(\hat{y}_i)+(1-y_i)log(1-\hat{y}_i)]
 \end{equation*}
@@ -196,7 +200,7 @@ where $\hat{y_i} \in [0,1]$ is the predicted probability for pixel $i$ and $y_i\
 \subsection{Stage 2: Mask-Guided Inpainting}
 \begin{table*}
 \begin{center}
-\caption{\small \underline{\textbf{Segmentation}} on Seen and Unseen evaluation splits for U-Net variants trained without pretraining and with pretraining. Unseen data comprises films and styles excluded from training, testing generalization to novel domains. Consistently, the best-performing model is the Pretrained U-Net using the Documartica dataset.}
+\caption{\small \underline{\textbf{Segmentation}} on Seen and Unseen evaluation splits for U-Net variants trained without pretraining and with pretraining. Unseen data comprises films and styles excluded from training, testing generalization to novel domains. Consistently, the best-performing segmentation model is the Pretrained U-Net using the Documartica dataset. The best performing model according to restoration varies between them.}
 \label{table:seg_only}
 \vspace{-2mm}
 \setlength{\tabcolsep}{8pt}
@@ -214,15 +218,15 @@ c c | c c c}
 & \multicolumn{2}{c|}{Seen} & \multicolumn{2}{c||}{Not Seen}
 & \multicolumn{2}{c|}{Segmentation} & \multicolumn{3}{c}{Inpainting} \\
 \midrule[0.15em]
-Base U-Net              & \underline{0.8628} & 0.9237 & \underline{0.8315} & \underline{0.9056}  & \underline{0.8472} & \underline{0.9147} & 24.59 & \underline{0.9758} & 0.0411 \\
-Base AttU-Net           & 0.8606 & 0.9231 & 0.8264 & 0.9021  & 0.8435 & 0.9126 & 24.52 & \underline{0.9758} & 0.0412 \\
+Base U-Net              & \underline{0.8628} & 0.9237 & \underline{0.8315} & \underline{0.9056}  & \underline{0.8472} & \underline{0.9147} & 24.59 & \textbf{0.9758} & 0.0411 \\
+Base AttU-Net           & 0.8606 & 0.9231 & 0.8264 & 0.9021  & 0.8435 & 0.9126 & 24.52 & \textbf{0.9758} & 0.0412 \\
 Base R2AttU-Net         & 0.7029 & 0.8234 & 0.7008 & 0.8218  & 0.7018 & 0.8226 & 16.70 & 0.9646 & 0.1692 \\
 \midrule
-Pretrained U-Net        & \textbf{0.8666} & \textbf{0.9271} & \textbf{0.8419} & \textbf{0.9122}  & \textbf{0.8542} & \textbf{0.9197} &   \underline{25.5895}    &   \textbf{0.9758}    &   0.0400    \\
-Pretrained AttU-Net     & 0.8622 & \underline{0.9245} & 0.8291 & 0.9045  & 0.8457 & 0.9145 &   \textbf{26.0835}   &   0.9757    &   \underline{0.0395}    \\
-Pretrained R2AttU-Net   & 0.6490 & 0.7860 & 0.6501 & 0.7868  & 0.6496 & 0.7864 &   17.0575    &   0.9563    &   0.2278    \\
+Pretrained U-Net        & \textbf{0.8666} & \textbf{0.9271} & \textbf{0.8419} & \textbf{0.9122}  & \textbf{0.8542} & \textbf{0.9197} &   25.5895    &   \textbf{0.9758}    &   0.0396    \\
+Pretrained AttU-Net     & 0.8622 & \underline{0.9245} & 0.8291 & 0.9045  & 0.8457 & 0.9145 &   \textbf{26.1766}   &   0.9757    &   \underline{0.0393}    \\
+Pretrained R2AttU-Net   & 0.6490 & 0.7860 & 0.6501 & 0.7868  & 0.6496 & 0.7864 &   16.9797    &   0.956   &   0.2318    \\
 \midrule
-Denoising Pretrained U-Net    & 0.8019 & 0.8894 & 0.8004 & 0.8884  & 0.8012 & 0.8889 &   25.7950    &   0.9755    &   \textbf{0.0387  }  \\
+Denoising Pretrained U-Net    & 0.8019 & 0.8894 & 0.8004 & 0.8884  & 0.8012 & 0.8889 &   \underline{25.7950} &   0.9755    &   \textbf{0.0387  }  \\
 Denoising Pretrained AttU-Net & 0.7923 & 0.8833 & 0.7904 & 0.8821  & 0.7914 & 0.8827 &   25.7121    &   0.9746    &   0.0409    \\
 \bottomrule[0.1em]
 \end{tabular}}
@@ -266,12 +270,11 @@ These experiments aim to determine whether task-aligned or domain-aligned repres
 \subsubsection{Segmentation Evaluation Metrics}
 
 Segmentation performance is assessed using the Dice coefficient (DSC) and Intersection-over-Union (IoU)~\cite{segmetrics}:
-
+\vspace*{-0.9em}
 \begin{align*}
     \text{DSC} &= \frac{2 |Y \cap \hat{Y}|}{|Y| + |\hat{Y}|} \\
     \text{IoU} &= \frac{|Y \cap \hat{Y}|}{|Y \cup \hat{Y}|}
 \end{align*}
-
 Here, $Y$ and $\hat{Y}$ denote the ground truth and predicted binary masks, respectively. Both metrics are computed at the pixel level over a held-out validation set. The Dice coefficient is particularly sensitive to class imbalance, which is critical in this task as the majority of pixels in each frame are undamaged. IoU penalizes false positives and false negatives more strictly and is especially useful for quantifying over-segmentation, which may lead to excessive inpainting and visual overcorrection.
 
 \subsubsection{Inpainting with RePaint}
@@ -322,8 +325,8 @@ To better interpret seemingly small differences in segmentation metrics, a pixel
     \vspace{-1em}
 \end{figure*}
 \subsubsection{Inpainting Performance}
-The inpainting stage, powered by RePaint, operates in a patch-wise manner due to architectural constraints of the pretrained diffusion model. Each high-resolution frame is divided into overlapping $256 \times 256$ tiles, which are inpainted independently and then stitched back together. To reduce computational cost, approximately 30 seconds per tile, diffusion sampling was limited to 25 steps. As a result, processing a single frame (typically composed of 36 tiles) can take over 15 minutes, rendering full-frame inference with higher-quality sampling infeasible for large-scale evaluation. This limitation may partially explain the presence of local artifacts or inconsistencies along patch boundaries, especially on larger artefacts, as it can be seen in Fig. \ref{resultats_repaint}.\\ 
-Quantitatively, the inpainting results reported in Table~1 (rightmost columns) are largely consistent with the segmentation performance trends: models producing higher-quality masks (e.g., the pretrained U-Net) yield superior downstream restoration, as reflected in lower LPIPS and higher SSIM and PSNR scores. This alignment confirms the expected pipeline behavior: more accurate segmentation enables more targeted and artifact-aware inpainting. The modular architecture's strength lies precisely in this decoupling, where improvements in one stage directly propagate to the final image quality without retraining the restoration model.
+The inpainting stage, powered by RePaint, operates in a patch-wise manner due to architectural constraints of the pretrained diffusion model. Each high-resolution frame is divided into overlapping $256 \times 256$ tiles, which are inpainted independently and then stitched back together. To reduce computational cost, approximately 30 seconds per tile, diffusion sampling was limited to 25 steps. As a result, processing a single frame (typically composed of 36 tiles) can take over 15 minutes, rendering full-frame inference with higher-quality sampling infeasible for large-scale evaluation. This limitation may partially explain the presence of local artifacts or inconsistencies along patch boundaries, especially on larger artefacts, as it can be seen in Fig. \ref{repaint_comparison}.\\ 
+Quantitatively, the inpainting results reported in Table~1 (rightmost columns) reveal a more complex picture. While some models with better segmentation performance do yield improved downstream restoration, as reflected in lower LPIPS and higher SSIM and PSNR, this correlation is not consistent across all experiments. For example, the Denoising Pretrained U-Net, despite lower segmentation metrics than its Documartica-pretrained counterpart, achieves the best LPIPS and PSNR. This suggests that segmentation quality is not the sole determinant of inpainting success. Instead, the performance of RePaint appears to be sensitive to the quality of the input mask, the spatial distribution of artifacts, and the limited number of diffusion steps, which may introduce variability in restoration quality. Thus, the hypothesis is that the stochastic nature of low-step diffusion may override marginal differences in mask quality, explaining the observed inconsistencies.
 
 
 \section{One-Stage Architecture}
@@ -438,14 +441,14 @@ Changing the $\ell_1$ loss reduction from mean to sum resulted in modest improve
 & \multicolumn{3}{c|}{\textbf{Not Seen}} 
 & \multicolumn{3}{c||}{\textbf{Seen}} 
 & \multicolumn{3}{c|}{\textbf{Average}} 
-& Time/frame (s) $\downarrow$ \\
+&   \\
 & LPIPS $\downarrow$ & PSNR $\uparrow$ & SSIM $\uparrow$ 
 & LPIPS $\downarrow$ & PSNR $\uparrow$ & SSIM $\uparrow$ 
 & LPIPS $\downarrow$ & PSNR $\uparrow$ & SSIM $\uparrow$ 
-& \\
+& Time/frame (s)$\downarrow$\\
 \midrule[0.15em]
-Two-Stage (Pretrained AttU-Net) & 0.0387 & \underline{26.46} & 0.9765 & \underline{0.0399} & \underline{25.90} & \underline{0.9754} & \underline{0.0393} & \underline{26.18} & 0.9760 & 432.00 \\
-Two-Stage (Pretrained U-Net) & \underline{0.0382} & 26.01 & \underline{0.9766} & 0.0409 & 25.37 & 0.9754 & 0.0396 & 25.69 & \underline{0.9760} & \underline{396.00} \\
+Two-Stage (Pretrained AttU-Net) & \underline{0.0399} & \underline{25.90} & \underline{0.9754} & 0.0387 & \underline{26.46} & 0.9765 & \underline{0.0393} & \underline{26.18} & 0.9757 & 432.00 \\
+Two-Stage (Pretrained U-Net) & 0.0409 & 25.37 & 0.9754  & \underline{0.0382} & 26.01 & \underline{0.9766} & 0.0396 & 25.69 & \underline{0.9758} & \underline{396.00} \\
 One-Stage (Final Restormer model) & \textbf{0.0023} & \textbf{36.90} & \textbf{0.9985} & \textbf{0.0032} & \textbf{35.33} & \textbf{0.9982} & \textbf{0.0027} & \textbf{36.12} & \textbf{0.9984} & \textbf{1.32} \\
 \bottomrule[0.1em]
 \end{tabular}}
