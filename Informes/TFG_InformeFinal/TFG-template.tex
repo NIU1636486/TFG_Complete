@@ -116,15 +116,19 @@ PIPELINES FOR ANALOG FILM RESTORATION}
 %\end{abstract}
 
 {
-    \centering
-    \includegraphics[width= \textwidth]{img/Portada.pdf}
+\begin{center}
+    \includegraphics[width=\textwidth]{img/Portada.pdf}
+    
+    \captionsetup{type=figure}
+    \captionof{figure}{Overview of the two restoration strategies: a two-stage pipeline with artifact segmentation and inpainting, and an end-to-end transformer model that restores degraded frames directly.}
     \label{fig:portada}
+\end{center}
 }
-
-\end{@twocolumnfalse}]
 
 \blfootnote{$\bullet$ E-mail de contacte: pol.riubrogent@autonoma.cat}
 \blfootnote{$\bullet$ Treball tutoritzat per: Ramon Baldrich Caselles (CVC, Color in Context)} \blfootnote{$\bullet$ Curs 2024/25}
+\end{@twocolumnfalse}]
+
 
 \section{Introduction}
 \lettrine[lines=3]{T}{he} restoration of analog film footage, such as 35mm prints, remains a labor-intensive and time-consuming process. Traditional workflows rely on expert technicians manually cleaning reels or correcting scans frame by frame, often with the aid of rule-based software tools. While this yields curated results, especially when assisted by film specialists, it can take weeks or months to restore a single reel, rendering large-scale archival efforts prohibitively slow and expensive. As a result, restoration remains accessible primarily to well-funded institutions. The advent of deep learning has opened new possibilities to automate key steps in this process by learning to reconstruct damaged film regions while preserving historical and aesthetic fidelity. \\
@@ -165,7 +169,7 @@ For artifact synthesis, this work employs the FILM-AA framework \cite{ivanova23a
   \centering
     \includegraphics[width= \textwidth]{img/Diagrama_Two_Stage_BO.pdf}\vspace{-0.6em}
     \caption{ \small
-Overview of the proposed two-stage restoration architecture. The pipeline consists of a segmentation stage (left) and an inpainting stage (right). In the first stage, a degraded film frame is passed through a U-Net-based model to generate a binary mask indicating the spatial extent of visual artifacts such as dust, dirt, or scratches. In the second stage, both the degraded frame and the predicted mask are provided as input to RePaint~\cite{repaint}, a pretrained diffusion-based inpainting model. 
+Overview of the proposed two-stage restoration architecture. A U-Net-based model first segments visual artifacts (e.g., dust, dirt, scratches) from a degraded film frame into a binary mask; both the frame and mask are then input to RePaint~\cite{repaint}, a pretrained diffusion-based inpainting model.
 }
     \label{fig:two-stage}
 \end{figure*}
@@ -388,7 +392,7 @@ The original Restormer implementation~\cite{restormer} was designed for image re
 To assess the adaptability of pretrained transformer-based models to the film restoration task, a finetuning experiment was conducted using the deraining model provided by the original Restormer paper~\cite{restormer}. This model, originally trained to remove synthetic rain artifacts from natural images, was repurposed by further training on the synthetic film degradation dataset introduced in this work. \\
 Finetuning was performed for several epochs using the same $\ell_1$ loss (sum-reduced) and learning rate schedule as in the baseline setup. The goal of this experiment is to evaluate whether a pretrained model, initially optimized for a visually distinct task, can transfer effectively to the domain of analog film restoration. This setup also serves as a practical alternative to full training in scenarios with limited compute or data availability.
 \subsubsection{Enhancing Focus via Loss Reweighting}
-An initial observation during training was that the standard $\ell_1$ loss converged slowly, with low-magnitude gradients. This was due to the majority of pixels being uncorrupted, causing the loss to be dominated by regions requiring no restoration. \\\ To address this, the loss reduction was changed from mean to sum, allowing the loss magnitude—and thus the gradient strength—to scale with the number of corrupted pixels. This led to slightly more stable convergence and improved restoration in affected areas. \\ Building on this, a mask-weighted $\ell_1$ loss was introduced to explicitly reweight contributions from damaged and undamaged regions. Corrupted pixels received full weight, while clean ones were downweighted using a factor $\lambda \in {0, 0.1, 0.25, 0.5, 0.75}$:
+An initial observation during training was that the standard $\ell_1$ loss converged slowly, with low-magnitude gradients. This was due to the majority of pixels being uncorrupted, causing the loss to be dominated by regions requiring no restoration. \\\ To address this, the loss reduction was changed from mean to sum, allowing the loss magnitude, and thus the gradient strength, to scale with the number of corrupted pixels. This led to slightly more stable convergence and improved restoration in affected areas. \\ Building on this, a mask-weighted $\ell_1$ loss was introduced to explicitly reweight contributions from damaged and undamaged regions. Corrupted pixels received full weight, while clean ones were downweighted using a factor $\lambda \in {0, 0.1, 0.25, 0.5, 0.75}$:
 \begin{equation*}
 \mathcal{L}_{\text{weighted}} = \sum_{i=1}^N \left[ M_i \cdot |\hat{I}_i - I_i| + \lambda (1 - M_i) \cdot |\hat{I}_i - I_i| \right]
 \end{equation*}
@@ -419,7 +423,7 @@ Training with the expanded dataset yielded the most immediate improvement. The m
 Contrary to expectations, increasing the patch size without curriculum learning led to degraded performance. The fixed large-patch model underperformed on both Seen and Unseen data, with LPIPS increasing and PSNR decreasing compared to the baseline. This suggests that increasing the receptive field alone is insufficient and may compromise local fidelity, particularly critical for preserving film grain and sharp details.
 \subsubsection{Effect of Domain-Specific Finetuning}
 
-Finetuning the original Restormer deraining model on the synthetic film restoration dataset yielded measurable improvements over training from scratch. On the Unseen evaluation split, performance improved across all metrics, indicating that prior exposure to a related low-level restoration task—despite differing visual artifacts—can accelerate adaptation and improve generalization. However, these gains remained modest compared to models trained from the ground up on the full extended dataset. This suggests that while task-transfer finetuning is beneficial, full retraining on domain-specific data remains more effective when resources permit.
+Finetuning the original Restormer deraining model on the synthetic film restoration dataset yielded measurable improvements over training from scratch. On the Unseen evaluation split, performance improved across all metrics, indicating that prior exposure to a related low-level restoration task, despite differing visual artifacts, can accelerate adaptation and improve generalization. However, these gains remained modest compared to models trained from the ground up on the full extended dataset. This suggests that while task-transfer finetuning is beneficial, full retraining on domain-specific data remains more effective when resources permit.
 \subsubsection{Loss Reweighting: Precision on Damaged Regions}
 
 Changing the $\ell_1$ loss reduction from mean to sum resulted in modest improvements, confirming that small loss magnitudes were indeed limiting gradient signal. Building on this, the use of a mask-weighted loss with $\lambda = 0.5$ led to substantial improvements in restoration quality. This variant achieved an average PSNR of 35.94 and the lowest LPIPS score (0.0092) among all tested models. These results validate the importance of prioritizing corrupted regions during training, while still maintaining some supervision over clean areas.
@@ -455,7 +459,7 @@ One-Stage (Final Restormer model) & \textbf{0.0023} & \textbf{36.90} & \textbf{0
 The best results were obtained by combining the two most effective improvements: the extended dataset and the mask-weighted loss with $\lambda = 0.5$. This final model demonstrated the strongest average performance across all metrics, including Seen and Unseen subsets. It is used as the representative end-to-end model for the comparative evaluation in the next Section.
 
 \section{Global Results and Discussion}
- This section presents a comparative analysis of the two most effective models, one from each architectural family, based on quantitative evaluation metrics and a qualitative test using a real-world film scan. The goal is to assess not only which model performs better under synthetic conditions, but also which generalizes more effectively to real, unseen degraded footage.
+ This section presents a comparative analysis of the two most effective models, one from each architectural family, based on quantitative evaluation metrics and a qualitative test using a real-world film scan. The goal is to assess not only which model performs better under synthetic conditions, but also which model does it faster and more efficient.
 \subsection{Quantitative Comparison on Synthetic Test Set}
 Table~\ref{table:final_model_results} compares the best-performing models from both the two-stage and one-stage pipelines. The final Restormer-based one-stage model clearly outperforms the pretrained U-Net and AttU-Net baselines across all quantitative metrics. \\
 On unseen data, the Restormer achieves a significantly lower LPIPS of 0.0023, alongside a PSNR of 36.90 dB and an SSIM of 0.9985. In contrast, the two-stage models remain in the 0.038–0.039 LPIPS range and below 26.5 dB PSNR. On seen data, the gap remains consistent: the one-stage model improves PSNR by nearly 10 dB and raises SSIM from around 0.975 to 0.9982. \\
@@ -463,12 +467,12 @@ In addition to superior restoration quality, the Restormer model offers a dramat
 
 These results confirm that the final Restormer model not only sets a new benchmark in restoration quality but also delivers the computational efficiency needed for scalable deployment.
 \subsection{Qualitative evaluation on real scans}
-Beyond synthetic benchmarks, the true value of a restoration model lies in its performance on real degraded film scans. A qualitative test was conducted on a high-resolution 35mm scan featuring typical artifacts—scratches, dust, and dirt—unseen during training. \\
+Beyond synthetic benchmarks, the true value of a restoration model lies in its performance on real degraded film scans. A qualitative test was conducted on a high-resolution 35mm scan featuring typical artifacts, scratches, dust, and dirt, unseen during training. \\
 Both models were evaluated: the two-stage approach delivered more consistent, artifact-aware results, with its segmentation network enabling selective inpainting that preserved undamaged areas and natural grain. Restormer, while visually effective in parts, often failed to correct defects and introduced mild oversharpening. \\
-This gap likely reflects differences in generalization. Despite fewer training iterations, the two-stage model better handled real-world degradation, whereas Restormer, trained longer, struggled with unseen artifacts—suggesting transformer-based models may require broader data to generalize well. \\
+This gap likely reflects differences in generalization. Despite fewer training iterations, the two-stage model better handled real-world degradation, whereas Restormer, trained longer, struggled with unseen artifacts, suggesting transformer-based models may require broader data to generalize well. \\
 While these results point to the robustness of the modular pipeline under limited data, broader evaluation on diverse real scans remains future work.
 \section{Limitations and Future Work}
-While this work offers valuable insight into the strengths of modular versus end-to-end architectures for analog film restoration, several limitations must be noted. \\ The one-stage solution, despite achieving top scores on synthetic benchmarks, struggled with real scanned footage—highlighting limited data efficiency and suggesting that transformer-based models may require broader and longer training to generalize. Only one extended training setup was explored due to time constraints. The qualitative evaluation was also limited to a single real scan. Although results favored the two-stage model, further testing across varied sources is needed to validate its generalizability. Moreover, evaluating real scans objectively remains challenging without ground truth. \\ One promising future direction is incorporating temporal context into the restoration process. Artifacts like dust and scratches are often transient across frames, while scene content is temporally coherent. Exploiting this could improve both defect detection and restoration quality.\\ Overall, this work lays the groundwork for comparative evaluation, and future work should expand real-world testing, scale training strategies, and explore temporal modeling for improved restoration of analog film.
+While this work offers valuable insight into the strengths of modular versus end-to-end architectures for analog film restoration, several limitations must be noted. \\ The one-stage solution, despite achieving top scores on synthetic benchmarks, struggled with real scanned footage, highlighting limited data efficiency and suggesting that transformer-based models may require broader and longer training to generalize. Only one extended training setup was explored due to time constraints. The qualitative evaluation was also limited to a single real scan. Although results favored the one-stage model, further testing across varied sources is needed to validate its generalizability. Moreover, evaluating real scans objectively remains challenging without ground truth. \\ One promising future direction is incorporating temporal context into the restoration process. Artifacts like dust and scratches are often transient across frames, while scene content is temporally coherent. Exploiting this could improve both defect detection and restoration quality.\\ Overall, this work lays the groundwork for comparative evaluation, and future work should expand real-world testing, scale training strategies, and explore temporal modeling for improved restoration of analog film.
 \section{Conclusions}
 This project compared two deep restoration pipelines for scanned 35mm film: a modular two-stage system and an end-to-end transformer-based model. Both were designed to remove artifacts such as dust and scratches while preserving the original film grain, a key restoration goal. \\
 The two-stage approach, combining damage segmentation with mask-guided inpainting, proved easier to set up and more interpretable. It offered fine-grained control, allowing restorations that altered only damaged areas. This led to minimal interference with grain, especially on real-world footage, where it consistently avoided over-restoration. \\

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Change List and Justification</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+    ul {
+      margin-bottom: 1.5em;
+    }
+    li {
+      margin-bottom: 0.5em;
+    }
+    .section {
+      margin-top: 2em;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Change List and Justification</h1>
+  <h2><em>From Dust to Detail: Deep Learning Pipelines for Analog Film Restoration</em></h2>
+  <p><strong>Author:</strong> Pol Riubrogent Comas</p>
+
+  <div class="section">
+    <h2>Initial Objectives and Tasks</h2>
+    <p>The project was initially conceived as a research and development effort aimed at restoring degraded analog film using deep learning techniques. Four main objectives were outlined:</p>
+    <ul>
+      <li><strong>O1:</strong> Propose a restoration solution for scanned 35mm and 16mm film reels from the 1960s, focusing on removing dirt and scratches while preserving the characteristic film grain.</li>
+      <li><strong>O2:</strong> Obtain or build a usable dataset that accurately represents common film degradations such as dust, dirt, and scratches.</li>
+      <li><strong>O3:</strong> Develop a visually appealing and accessible graphical user interface to present results in a user-friendly way.</li>
+      <li><strong>O4:</strong> Extend the system’s capabilities to generalize to other types of film stock beyond the initial target.</li>
+    </ul>
+
+    <p>The technical tasks defined to fulfill these objectives were:</p>
+    <ul>
+      <li><strong>T1:</strong> Research existing datasets for film restoration.</li>
+      <li><strong>T2:</strong> Generate a synthetic dataset using high-resolution clean frames and artifact masks.</li>
+      <li><strong>T3:</strong> Implement a segmentation model to detect defects in individual frames.</li>
+      <li><strong>T4:</strong> Integrate temporal context from adjacent frames to improve segmentation.</li>
+      <li><strong>T5:</strong> Implement a basic inpainting pipeline to test restoration from segmented masks.</li>
+      <li><strong>T6:</strong> Explore alternative inpainting architectures for comparative evaluation.</li>
+      <li><strong>T7:</strong> Develop a graphical user interface to showcase the full pipeline.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Changes and Justifications</h2>
+
+    <h3>Initial Report → Progress Report I</h3>
+    <ul>
+      <li>Real datasets were unavailable, so a synthetic dataset was created using the FILM-AA framework.</li>
+      <li>Segmentation architecture was fixed as U-Net and its variants; transformer-based models were discarded due to complexity.</li>
+      <li>RePaint was adopted for inpainting, replacing the idea of training a model from scratch.</li>
+    </ul>
+    <p><strong>Dropped Task:</strong></p>
+    <ul>
+      <li><strong>T4:</strong> Temporal modeling was not implemented due to time constraints and its architectural complexity. It will be pursued independently in the future.</li>
+    </ul>
+
+    <h3>Progress Report I → Progress Report II</h3>
+    <ul>
+      <li>The dataset was improved with Gaussian blur on artifact edges to mimic real damage.</li>
+      <li>Pretraining with the Documartica dataset improved generalization.</li>
+      <li>Evaluation was formalized using IoU, Dice, PSNR, SSIM, and LPIPS metrics.</li>
+    </ul>
+    <p><strong>Dropped Task:</strong></p>
+    <ul>
+      <li><strong>T6:</strong> Comparison of multiple inpainting architectures was skipped. RePaint was sufficient and modular; effort was redirected to evaluation and analysis.</li>
+    </ul>
+
+    <h3>Progress Report II → Final Report</h3>
+    <ul>
+      <li>Introduced a second pipeline based on Restormer, offering an end-to-end transformer-based restoration strategy.</li>
+      <li>Conducted full quantitative and qualitative evaluations, including real archival footage.</li>
+    </ul>
+    <p><strong>Dropped Items:</strong></p>
+    <ul>
+      <li><strong>T7:</strong> The GUI was dropped. As the project shifted toward a comparative study of restoration models rather than a deliverable product, interface development was no longer a priority.</li>
+      <li><strong>O4:</strong> Generalization to other film types was not achieved. The project remained focused on the 1960s film domain for reliability and scope management.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Final Remarks</h2>
+    <p>The project fulfilled its main research goal: restoring analog film while preserving its aesthetic integrity. The development culminated in two complete approaches—one modular and one end-to-end—and offered a technical comparison backed by metrics and real-world testing.</p>
+    <p>While the GUI and temporal modeling were not implemented, these decisions reflect a focus on scientific contribution over feature breadth. Both elements are planned for future independent development.</p>
+  </div>
+
+</body>
+</html>
