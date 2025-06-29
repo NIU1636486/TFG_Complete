@@ -137,11 +137,10 @@ This work proposes and evaluates two restoration strategies tailored to the spec
 To address this challenge, the remainder of the work is organized as follows. First, I examine relevant prior efforts in image restoration, situating this project within the broader landscape of deep learning techniques. I then describe the construction of a domain-specific synthetic dataset tailored to film restoration. Next, two architectural strategies are detailed: a modular pipeline that separates defect detection and correction, and a transformer-based end-to-end model. Each is evaluated using both objective metrics and perceptual criteria. Finally, I discuss the comparative performance of these approaches, reflect on their limitations, and suggest directions for future research.
 
 \section{Related Work}
-\subsection{Classical and Deep Learning-Based Restoration}
 Before the advent of digital tools, analog film restoration was an entirely manual endeavor. Archivists physically cleaned and reconditioned film reels to remove dust, mold, and dirt, often using specialized solvents and lint-free wipes. Torn or decayed frames were painstakingly repaired by splicing breaks with tape or glue, and severely damaged sequences could be salvaged by optical printing – re-photographing each frame to produce a new copy that bypasses scratches or warped sections. With the transition to scanned film, classical digital techniques emerged to accelerate restoration. Early software systems deployed rule-based defect detectors and morphological filters to identify artifacts like dust specks and vertical scratches, followed by image inpainting or interpolation to fill in those regions. While these hand-crafted pipelines improved consistency over purely manual repair, they often required expert tuning and struggled with complex degradations, setting the stage for data-driven restoration approaches in subsequent work. \cite{croci2015advanced}
 
 \subsection{Restoration of Analog Film Scans}
-Restoring analog film scans poses unique challenges due to the need to remove defects like dust, scratches, and dirt without erasing the fine-grained texture that defines their aesthetic. Existing methods,ranging from GAN-based inpainting \cite{gan} to CNNs optimized for PSNR and SSIM, often yield visually clean results but treat film grain as noise, leading to overly smoothed outputs that undermine archival fidelity. Furthermore, few works systematically compare architectural paradigms, leaving open questions about the relative merits of modular versus end-to-end approaches. \cite{survey} \\ 
+Restoring analog film scans poses unique challenges due to the need to remove defects like dust, scratches, and dirt without erasing the fine-grained texture that defines their aesthetic. Existing methods, ranging from GAN-based inpainting \cite{gan} to CNNs optimized for PSNR and SSIM, often yield visually clean results but treat film grain as noise, leading to overly smoothed outputs that undermine archival fidelity. Furthermore, few works systematically compare architectural paradigms, leaving open questions about the relative merits of modular versus end-to-end approaches. \cite{survey} \\ 
 \subsection{Modular Restoration: Segmentation Followed by Inpainting}
 The FILM-AA framework exemplifies a modular strategy, employing a two-stage pipeline: a segmentation network trained on high-resolution labeled scans identifies damaged regions, and an inpainting model restores only those areas. This approach emphasizes interpretability and minimal intervention, key values in heritage restoration, by preserving untouched content and offering fine control. However, it does not explore architectural variants or assess the integration of advanced generative models, limiting its adaptability and generalizability.\\
 \subsection{Transformer-Based Approaches for Image Restoration: Restormer}
@@ -197,7 +196,7 @@ where $\hat{y_i} \in [0,1]$ is the predicted probability for pixel $i$ and $y_i\
 \subsection{Stage 2: Mask-Guided Inpainting}
 \begin{table*}
 \begin{center}
-\caption{\small \underline{\textbf{Segmentation}} on Seen and Unseen evaluation splits for U-Net variants trained without pretraining and with pretraining. Unseen data comprises films and styles excluded from training, testing generalization to novel domains. Consistently the best performing model is the Pretrained U-Net using the Documartica dataset.}
+\caption{\small \underline{\textbf{Segmentation}} on Seen and Unseen evaluation splits for U-Net variants trained without pretraining and with pretraining. Unseen data comprises films and styles excluded from training, testing generalization to novel domains. Consistently, the best-performing model is the Pretrained U-Net using the Documartica dataset.}
 \label{table:seg_only}
 \vspace{-2mm}
 \setlength{\tabcolsep}{8pt}
@@ -260,7 +259,6 @@ To assess the impact of initialization on segmentation performance, four pretrai
     \item \textbf{No pretraining}: Random weight initialization.
     \item \textbf{Denoising pretraining}: Following Brempong et al.~\cite{denoise}, a denoising task was used to initialize weights. The model was trained for 10 epochs to reconstruct clean images from synthetic Gaussian noise ($\mu=0$, $\sigma=25/255$), a setting commonly used in pretext tasks.
     \item \textbf{Domain-specific pretraining}: Initialization via training on the Documartica dataset using the same artifact synthesis pipeline.
-    \item \textbf{Combined pretraining}: A sequential strategy involving denoising followed by Documartica pretraining.
 \end{itemize}
 
 These experiments aim to determine whether task-aligned or domain-aligned representations yield stronger generalization on the segmentation task.
@@ -300,13 +298,13 @@ Among the models trained from scratch, both the vanilla U-Net and Attention U-Ne
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\linewidth]{img/segmentation_figure.pdf}
-    \caption{\small Comparasion of three of the AttU-Net experiments, along the baseline R2AttU-Net. It can be observated that all of the AttU-Net perform equally, varing just in the contours of artefacts. The R2AttU-Net does not perform as expected, this is hipothesized that it is due to undertraining the model.}
+    \caption{\small Comparison of three of the AttU-Net experiments, along twith he baseline R2AttU-Net. It can be observed that all of the AttU-Net perform equally, varying just in the contours of artefacts. The R2AttU-Net does not perform as expected. This is hypothesized that this is due to undertraining the model.}
     \label{fig:segmentation_performance}
 \end{figure}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\linewidth]{img/repaint.pdf}
-    \caption{\small Comparasion of three restorations, using the same three experiments of the AttU-Net experiments used before. It can be observed that now the worst performing one is the model with the weights initialized using a denoising task. In \textbf{bold} are shown the best performing result in each metric. }
+    \caption{\small Comparison of three restorations, using the same three experiments as the AttU-Net experiments used before. It can be observed that now the worst-performing one is the model with the weights initialized using a denoising task. In \textbf{bold} are shown the best performing results in each metric. }
     \label{fig:repaint_comparison}
 \end{figure}
 
@@ -315,8 +313,7 @@ Among the models trained from scratch, both the vanilla U-Net and Attention U-Ne
 To assess the role of initialization strategies, experiments were conducted to evaluate three pretraining strategies: no pretraining (random initialization), denoising-only, and domain-specific (Documartica). As shown in Table~1, domain-aligned pretraining consistently improves segmentation performance. The pretrained vanilla U-Net achieves the best overall results, with an average IoU of 0.87 and Dice score of 0.93 across Seen and Unseen splits. Attention U-Net also benefits from Documartica pretraining, outperforming its randomly initialized counterpart.
 Denoising pretraining alone yields moderate improvements, particularly in early convergence, suggesting that even generic pretext tasks can help regularize training. However, its final performance remains below that of domain-specific pretraining. These findings emphasize the importance of aligning pretraining objectives and data with the downstream task, particularly in restoration contexts requiring pixel-level precision. As it can be seen in Fig. \ref{fig:segmentation_performance}, a comparasion of the pretraining strategies in the AttU-Net network as well as a mask predicted by the R2AttU-Net, the performance of all three AttU-Net models differ just by a few pixels, even though in this context these pixels are significant, in this case they are not significant enough to determine which one is best. 
 \subsubsection{Pixel-Level Sensitivity Analysis}
-To better interpret seemingly small differences in segmentation metrics, a pixel-level analysis was conducted comparing predicted damage masks with ground truth annotations. Empirical results indicate that a 0.10 drop in Dice score and a 0.20 drop in IoU correspond to approximately 100 pixels of mismatch per frame. Since artifact regions typically occupy less than 5\% of total image area, this level of discrepancy is substantial. These results highlight that minor differences in global metrics can reflect significant segmentation failures, especially in fine-grained tasks such as defect localization. Consequently, the performance gap between models like U-Net and R2AttUNet is not only numerically evident but also practically meaningful, with direct implications for restoration accuracy and grain preservation in downstream processing.
-\section{One-Stage Architecture}
+To better interpret seemingly small differences in segmentation metrics, a pixel-level analysis was conducted comparing predicted damage masks with ground truth annotations. Empirical results indicate that a 0.10 drop in Dice score and a 0.20 drop in IoU correspond to approximately 100 pixels of mismatch per frame. Since artifact regions typically occupy less than 5\% of the total image area, this level of discrepancy is substantial. These results highlight that minor differences in global metrics can reflect significant segmentation failures, especially in fine-grained tasks such as defect localization. Consequently, the performance gap between models like U-Net and R2AttUNet is not only numerically evident but also practically meaningful, with direct implications for restoration accuracy and grain preservation in downstream processing.
 \begin{figure*}[t]
     \centering
     \includegraphics[width= 0.8\textwidth]{img/architecture.pdf}\vspace{-0.6em}
@@ -325,20 +322,21 @@ To better interpret seemingly small differences in segmentation metrics, a pixel
     \vspace{-1em}
 \end{figure*}
 \subsubsection{Inpainting Performance}
-The inpainting stage, powered by RePaint, operates in a patch-wise manner due to architectural constraints of the pretrained diffusion model. Each high-resolution frame is divided into overlapping $256 \times 256$ tiles, which are inpainted independently and then stitched back together. To reduce computational cost, approximately 30 seconds per tile, diffusion sampling was limited to 25 steps. As a result, processing a single frame (typically composed of 36 tiles) can take over 15 minutes, rendering full-frame inference with higher-quality sampling infeasible for large-scale evaluation. This limitation may partially explain the presence of local artifacts or inconsistencies along patch boundaries, specially on larger artefacts, as it can be seen in Fig. \ref{resultats_repaint}.\\ 
-Quantitatively, the inpainting results reported in Table~1 (rightmost columns) are largely consistent with the segmentation performance trends: models producing higher-quality masks (e.g., the pretrained U-Net) yield superior downstream restoration, as reflected in lower LPIPS and higher SSIM and PSNR scores. This alignment confirms the expected pipeline behavior: more accurate segmentation enables more targeted and artifact-aware inpainting. The modular architecture's strength lies precisely in this decoupling, where improvements in one stage directly propagate to final image quality without retraining the restoration model.
+The inpainting stage, powered by RePaint, operates in a patch-wise manner due to architectural constraints of the pretrained diffusion model. Each high-resolution frame is divided into overlapping $256 \times 256$ tiles, which are inpainted independently and then stitched back together. To reduce computational cost, approximately 30 seconds per tile, diffusion sampling was limited to 25 steps. As a result, processing a single frame (typically composed of 36 tiles) can take over 15 minutes, rendering full-frame inference with higher-quality sampling infeasible for large-scale evaluation. This limitation may partially explain the presence of local artifacts or inconsistencies along patch boundaries, especially on larger artefacts, as it can be seen in Fig. \ref{resultats_repaint}.\\ 
+Quantitatively, the inpainting results reported in Table~1 (rightmost columns) are largely consistent with the segmentation performance trends: models producing higher-quality masks (e.g., the pretrained U-Net) yield superior downstream restoration, as reflected in lower LPIPS and higher SSIM and PSNR scores. This alignment confirms the expected pipeline behavior: more accurate segmentation enables more targeted and artifact-aware inpainting. The modular architecture's strength lies precisely in this decoupling, where improvements in one stage directly propagate to the final image quality without retraining the restoration model.
 
 
+\section{One-Stage Architecture}
 In contrast to the modular pipeline, this section explores an end-to-end transformer-based model that directly maps degraded film frames to restored outputs without explicit damage localization. By removing the segmentation stage, this approach relies on the model’s capacity to implicitly identify and correct artifacts, potentially offering a more streamlined restoration workflow.
 
 \subsection{End-to-End Restoration via Implicit Artifact Modeling}
 The proposed model is based on Restormer [10], a vision transformer architecture originally designed for high-resolution image restoration tasks such as denoising and deblurring. Unlike the two-stage pipeline that separates defect localization and content synthesis, this model operates in a fully end-to-end fashion. The input is a synthetically degraded film frame, and the output is its restored counterpart.
 This formulation treats restoration as a regression problem over all pixels, optimized via an $L_1$ loss. The model receives no auxiliary mask supervision and must implicitly infer both the spatial extent and nature of visual degradations. \\
-While this design offers flexibility and generalization, it comes with trade-offs. In the absence of explicit supervision, the model must learn not only how but where to restore. This increases the risk of modifying visually pristine regions, such as the characteristic grain in analog film, if the learned prior becomes overly aggressive. This behavior contrasts with the two-stage pipeline, where explicit segmentation provides fine-grained control and aligns better with archival restoration principles: intervene only when necessary.
+While this design offers flexibility and generalization, it comes with trade-offs. In the absence of explicit supervision, the model must learn not only how but also where to restore. This increases the risk of modifying visually pristine regions, such as the characteristic grain in analog film, if the learned prior becomes overly aggressive. This behavior contrasts with the two-stage pipeline, where explicit segmentation provides fine-grained control and aligns better with archival restoration principles: intervene only when necessary.
 
 \begin{table*}
 \begin{center}
-\caption{ \small Restoration performance of the end-to-end Restormer model across various training configurations. The best-performing setup combines the extended dataset and a mask-weighted loss with $\lambda = 0.5$. Arrows indicate whether higher ($\uparrow$) or lower ($\downarrow$) is better. \textbf{Bold} represents the best in that metric, and \underline{underlined} the second best. The final row represents the combination of the best performing experiments: Trained with the big dataset, a weighted L1 loss with $\lambda=0.5$ and pretrained.}
+\caption{ \small Restoration performance of the end-to-end Restormer model across various training configurations. The best-performing setup combines the extended dataset and a mask-weighted loss with $\lambda = 0.5$. Arrows indicate whether higher ($\uparrow$) or lower ($\downarrow$) is better. \textbf{Bold} represents the best in that metric, and \underline{underlined} the second best. The final row represents the combination of the best performing experiments: Trained with the big dataset, a weighted L1 loss with $\lambda=0.5$, and pretrained.}
 \label{table:restormer_results}
 \vspace{-2mm}
 \setlength{\tabcolsep}{10pt}
@@ -375,7 +373,7 @@ Masked Loss ($\lambda = 0.75$) & 0.0044 & \underline{34.51} & \textbf{0.9980} & 
 \subsection{Restormer Architecture and Vision Transformer Principles}
 Restormer \cite{restormer} is selected in this work for its ability to model long-range dependencies via attention mechanisms while preserving spatial resolution, an essential property for film restoration tasks involving spatially extended degradations. Unlike convolution-based architectures with fixed receptive fields, Restormer dynamically aggregates contextual information through self-attention, making it particularly effective for detecting and restoring artifacts such as scratches or stains that span non-local image regions.
 \subsection{Experimental Setup}
-To evaluate the end-to-end restoration model, a sequence of controlled experiments is conducted using synthetically generated degraded-clean image pairs. The objective is to assess the model's capacity to reconstruct corrupted content while preserving perceptual fidelity, particularly the fine grain and texture characteristic of analog film. The experimental sequence begins with a baseline configuration and iteratively introduces modifications to the data volume, architectural parameters, and loss function. Each variant is designed to address limitations identified in preceding configurations.
+To evaluate the end-to-end restoration model, a sequence of controlled experiments is conducted using synthetically generated degraded-clean image pairs. The objective is to assess the model's capacity to reconstruct corrupted content while preserving perceptual fidelity, particularly the fine-grain and texture characteristics of analog film. The experimental sequence begins with a baseline configuration and iteratively introduces modifications to the data volume, architectural parameters, and loss function. Each variant is designed to address limitations identified in preceding configurations.
 \subsubsection{Baseline Training Configuration}
 The initial model is trained using the synthetic dataset described in Section~\ref{sec:dataset}, containing approximately 1,300 image pairs. Restoration is formulated as a pixel-wise regression problem, optimized using the standard $\ell_1$ loss:
 \begin{equation*}
@@ -406,27 +404,27 @@ This section presents the results of the one-stage restoration experiments intro
 
 \subsubsection{Baseline Performance}
 
-The baseline model, trained on the original synthetic dataset with standard $\ell_1$ loss and mean reduction, achieved strong perceptual quality on Seen data (LPIPS = 0.0169, SSIM = 0.9957). However, performance on Unseen domains, films and styles not present in the training set, was less consistent. This gap highlighted limitations in generalization and motivated further exploration.
+The baseline model, trained on the original synthetic dataset with standard $\ell_1$ loss and mean reduction, achieved strong perceptual quality on Seen data (LPIPS = 0.0169, SSIM = 0.9957). However, performance on Unseen domains, films, and styles not present in the training set was less consistent. This gap highlighted limitations in generalization and motivated further exploration.
 
 \subsubsection{Effect of Data Scaling}
 
-Training with the expanded dataset yielded the most immediate improvement. The model trained on the extended 5k-pair dataset significantly outperformed the baseline across all metrics and both evaluation splits. LPIPS dropped to 0.0039 and PSNR increased by over 3 dB on average. These results confirm that increasing stylistic diversity and artifact variation in training data has a substantial impact on generalization.
+Training with the expanded dataset yielded the most immediate improvement. The model trained on the extended 5k-pair dataset significantly outperformed the baseline across all metrics and both evaluation splits. LPIPS dropped to 0.0039, and PSNR increased by over 3 dB on average. These results confirm that increasing stylistic diversity and artifact variation in training data has a substantial impact on generalization.
 \begin{figure*}[t]
     \centering
     \includegraphics[width= \textwidth]{img/comparason_restormer.pdf}\vspace{-0.6em}
-    \caption{\small Results across three selected restormer tests, the baseline model, finetuned model from the existing deraining weights and the final model containing all the better performing experiments. As it can be seen, there is bast improvement from the baseline to the final model, both quantitatively and qualitatively.}
+    \caption{\small Results across three selected restormer tests, the baseline model, the finetuned model from the existing deraining weights, and the final model containing all the better-performing experiments. As can be seen, there is a significant improvement from the baseline to the final model, both quantitatively and qualitatively.}
     \label{fig:comparason_restormer}
     \vspace{-1em}
 \end{figure*}
 \subsubsection{Effect of Larger Patch Sizes}
 
-Contrary to expectations, increasing the patch size without curriculum learning led to degraded performance. The fixed large-patch model underperformed on both Seen and Unseen data, with LPIPS increasing and PSNR decreasing compared to the baseline. This suggests that increasing the receptive field alone is insufficient and may compromise local fidelity, particularly critical for preserving film grain and sharp details.
+Contrary to expectations, increasing the patch size without curriculum learning led to degraded performance. The fixed large-patch model underperformed on both seen and Unseen data, with LPIPS increasing and PSNR decreasing compared to the baseline. This suggests that increasing the receptive field alone is insufficient and may compromise local fidelity, particularly critical for preserving film grain and sharp details.
 \subsubsection{Effect of Domain-Specific Finetuning}
 
 Finetuning the original Restormer deraining model on the synthetic film restoration dataset yielded measurable improvements over training from scratch. On the Unseen evaluation split, performance improved across all metrics, indicating that prior exposure to a related low-level restoration task, despite differing visual artifacts, can accelerate adaptation and improve generalization. However, these gains remained modest compared to models trained from the ground up on the full extended dataset. This suggests that while task-transfer finetuning is beneficial, full retraining on domain-specific data remains more effective when resources permit.
 \subsubsection{Loss Reweighting: Precision on Damaged Regions}
 
-Changing the $\ell_1$ loss reduction from mean to sum resulted in modest improvements, confirming that small loss magnitudes were indeed limiting gradient signal. Building on this, the use of a mask-weighted loss with $\lambda = 0.5$ led to substantial improvements in restoration quality. This variant achieved an average PSNR of 35.94 and the lowest LPIPS score (0.0092) among all tested models. These results validate the importance of prioritizing corrupted regions during training, while still maintaining some supervision over clean areas.
+Changing the $\ell_1$ loss reduction from mean to sum resulted in modest improvements, confirming that small loss magnitudes were indeed limiting the gradient signal. Building on this, the use of a mask-weighted loss with $\lambda = 0.5$ led to substantial improvements in restoration quality. This variant achieved an average PSNR of 35.94 and the lowest LPIPS score (0.0092) among all tested models. These results validate the importance of prioritizing corrupted regions during training, while still maintaining some supervision over clean areas.
 \begin{table*}
 \begin{center}
 \caption{ \small Comparison of final models across seen and unseen data. The One-Stage Final Model clearly outperforms the two-stage pretrained U-Net baselines both in restoration quality and inference speed. In \textbf{bold} the best result in each metric, and underlined the second best.}
@@ -459,13 +457,13 @@ One-Stage (Final Restormer model) & \textbf{0.0023} & \textbf{36.90} & \textbf{0
 The best results were obtained by combining the two most effective improvements: the extended dataset and the mask-weighted loss with $\lambda = 0.5$. This final model demonstrated the strongest average performance across all metrics, including Seen and Unseen subsets. It is used as the representative end-to-end model for the comparative evaluation in the next Section.
 
 \section{Global Results and Discussion}
- This section presents a comparative analysis of the two most effective models, one from each architectural family, based on quantitative evaluation metrics and a qualitative test using a real-world film scan. The goal is to assess not only which model performs better under synthetic conditions, but also which model does it faster and more efficient.
+ This section presents a comparative analysis of the two most effective models, one from each architectural family, based on quantitative evaluation metrics and a qualitative test using a real-world film scan. The goal is to assess not only which model performs better under synthetic conditions, but also which model does it faster and more efficiently. Qualitative results comparison can be seen in Appendix B.
 \subsection{Quantitative Comparison on Synthetic Test Set}
 Table~\ref{table:final_model_results} compares the best-performing models from both the two-stage and one-stage pipelines. The final Restormer-based one-stage model clearly outperforms the pretrained U-Net and AttU-Net baselines across all quantitative metrics. \\
 On unseen data, the Restormer achieves a significantly lower LPIPS of 0.0023, alongside a PSNR of 36.90 dB and an SSIM of 0.9985. In contrast, the two-stage models remain in the 0.038–0.039 LPIPS range and below 26.5 dB PSNR. On seen data, the gap remains consistent: the one-stage model improves PSNR by nearly 10 dB and raises SSIM from around 0.975 to 0.9982. \\
-In addition to superior restoration quality, the Restormer model offers a dramatic reduction in inference time, requiring only 1.32 seconds per frame, compared to 396 seconds for the U-Net and 432 seconds for the AttU-Net. This improvement of over 300× in speed further reinforces the practicality of the one-stage design.
+In addition to superior restoration quality, the Restormer model offers a dramatic reduction in inference time, requiring only 1.32 seconds per frame, compared to 396 seconds for the U-Net and 432 seconds for the AttU-Net. This improvement of over 300× in speed further reinforces the practicality of the one-stage design. 
 
-These results confirm that the final Restormer model not only sets a new benchmark in restoration quality but also delivers the computational efficiency needed for scalable deployment.
+These results confirm that the final Restormer model not only sets a new benchmark in restoration quality but also delivers the computational efficiency needed for scalable deployment. 
 \subsection{Qualitative evaluation on real scans}
 Beyond synthetic benchmarks, the true value of a restoration model lies in its performance on real degraded film scans. A qualitative test was conducted on a high-resolution 35mm scan featuring typical artifacts, scratches, dust, and dirt, unseen during training. \\
 Both models were evaluated: the two-stage approach delivered more consistent, artifact-aware results, with its segmentation network enabling selective inpainting that preserved undamaged areas and natural grain. Restormer, while visually effective in parts, often failed to correct defects and introduced mild oversharpening. \\
@@ -480,7 +478,7 @@ In contrast, the end-to-end Restormer model unified restoration into a single ne
 Both methods are feasible and effective, with distinct trade-offs. The two-stage design excels in precision and archival alignment; the end-to-end model is better suited for scalable deployment. Future work could explore hybrid designs and temporal consistency to enhance both quality and generalization.
 
 \section{Acknowledgements}
-I would like to thank Dr. Ramon Baldrich i Caselles for granting me access to the Computer Vision Center and for his continuous support, guidance and knowledge throughout this project. I would also like to thank all the CVC interns that were present for their help and encouragement during the development of this work.
+I would like to thank Dr. Ramon Baldrich i Caselles for granting me access to the Computer Vision Center and for his continuous support, guidance, and knowledge throughout this project. I would also like to thank all the CVC interns who were present for their help and encouragement during the development of this work.
 \begingroup
 \small  % or \footnotesize, \scriptsize, etc.
 \renewcommand{\refname}{References}
@@ -515,7 +513,7 @@ I would like to thank Dr. Ramon Baldrich i Caselles for granting me access to th
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\linewidth]{img/AnnexA.pdf}
-    \caption{Additional qualitative comparison of the models' performance. For the two-stage section, the pretrained U-Net was used, and for the Restormer, the final model training was used (trained with the weighted L1 loss with $\lambda = 0.5$, finetunning the original deraining model with the big dataset). Qualitative it can be determined that the one-stage model is not only faster, but the better performing one. }
+    \caption{Additional qualitative comparison of the models' performance. For the two-stage section, the pretrained U-Net was used, and for the Restormer, the final model training was used (trained with the weighted L1 loss with $\lambda = 0.5$, finetunning the original deraining model with the big dataset). Qualitatively, it can be determined that the one-stage model is not only faster, but also the better-performing one. }
     \label{fig:anex5}
 \end{figure}
 \end{document}
