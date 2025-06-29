@@ -25,7 +25,7 @@ Both methods aim to remove artifacts such as **dust, dirt, scratches, and burns*
 ---
 
 ##  Repository Structure
-<pre lang="markdown"> ```text TFG_Complete/ # Main project directory ├── Artifact_Creation/ # Scripts and modules to generate synthetic artifacts and datasets │ ├── damage_generator/ # Core damage generation code and helpers │ └── scans/ # Sample scan images and corresponding annotations ├── imgs/ # Diagrams and figures used in the project └── Informes/ # Reports and documentation (initial report, LaTeX files) └── InformeInicial/ # Initial report files including source and PDF output ``` </pre>
+<pre lang="markdown"> ```text TFG_Complete/ # Main project directory   ├── Artifact_Creation/ # Scripts and modules to generate synthetic artifacts and datasets   │ ├── damage_generator/ # Core damage generation code and helpers   │ └── scans/ # Sample scan images and corresponding annotations   ├── imgs/ # Diagrams and figures used in the project └── Informes/ # Reports and documentation (initial report, LaTeX files)   └── InformeInicial/ # Initial report files including source and PDF output ``` </pre>
 ---
 ##  Dossier Timeline
 The timeline and history of changes in the project, as well as its objectives and tasks can be consulted in the progress reports, in the Informes folder in this repo.
