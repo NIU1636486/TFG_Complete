@@ -25,7 +25,7 @@ Both methods aim to remove artifacts such as **dust, dirt, scratches, and burns*
 ---
 
 ##  Repository Structure
-<pre lang="markdown"> ```text 
+```text 
 TFG_Complete/                   # Main project directory
 ├── Artifact_Creation/         # Scripts and modules to generate synthetic artifacts and datasets
 ├── Informes/                  # All official reports and documentation
@@ -36,7 +36,7 @@ TFG_Complete/                   # Main project directory
 ├── Restormer/                 # Implementation and experiments with Restormer model
 └── Two-stage/                 # Two-stage restoration architecture
     ├── inpainting_repaint/    # RePaint-based inpainting model
-    └── segmentation-unet/     # UNet-based damage segmentation model ``` </pre>
+    └── segmentation-unet/     # UNet-based damage segmentation model ``` 
 ---
 ##  Dossier Timeline
 The timeline and history of changes in the project, as well as its objectives and tasks can be consulted in the progress reports, in the Informes folder in this repo.
