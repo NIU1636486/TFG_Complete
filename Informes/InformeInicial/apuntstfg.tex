@@ -1,0 +1,162 @@
+	\documentclass[openany, 12pt]{article}
+	\input{plantilles.tex}
+	\usepackage{amsmath, amsfonts, amssymb, amsthm}
+	\usepackage{braket}
+	\usepackage{bbold}
+	\usepackage{enumitem}
+	\usepackage{setspace}
+	\usepackage{titlesec}
+	\usepackage[]{xcolor}
+	\usepackage{colortbl} % For coloring table cells
+	\usepackage{array} % For better table formatting
+	\usepackage{geometry} % For adjusting page margins
+	\usepackage{cite}
+	
+	% Define colors for importance levels
+	\definecolor{red}{RGB}{255, 200, 200}
+	\definecolor{green}{RGB}{200, 255, 200}
+	\definecolor{yellow}{RGB}{255, 255, 200}
+	\definecolor{black}{RGB}{0, 0, 0} % Define black color
+	
+	% Table column formatting
+	\newcolumntype{I}{>{\centering\arraybackslash}p{0.5cm}}
+	\newcolumntype{O}{>{\raggedright\arraybackslash}p{13cm}}
+	\newcolumntype{M}{>{\raggedright\arraybackslash}p{2cm}}
+	
+	\newcolumntype{L}{>{\raggedright\arraybackslash}p{6cm}} % Task name column (expanded)
+	\newcolumntype{C}{>{\centering\arraybackslash}p{1cm}} % Week columns
+	\newcolumntype{D}{>{\centering\arraybackslash}p{2.5cm}} %  Date columns
+	\newcolumntype{R}{>{\raggedright\arraybackslash}p{6cm}} % Deliverable column (expanded)
+	
+	\titleformat{\section}
+	{\normalfont\Large\bfseries}{\thesection}{1em}{}[{\titlerule[0.5pt]}]
+	
+	\begin{document}
+	\pagestyle{plain}
+	\author{Pol Riubrogent Comas\\ \textit{Supervisor: Ramón Baldrich Caselles}}
+	\title{\textbf{Initial report: Film damage restoration using diffusion with temporal bias}}
+	\date{\small 10/03/2025}
+	\maketitle
+	\section{Introduction}
+The aim of this final project is to explore the field of image restoration, specifically focusing on old scans of film reels and slides. Image restoration plays a crucial role in preserving and reviving historical media, as many archival films suffer from various forms of degradation over time. These degradations include physical damage such as scratches and dust, and other artifacts introduced during storage. \\\\
+Traditional film restoration relies heavily on manual labor, with experts cleaning frames individually or using rule-based automated processes. While these methods have been effective in the past, they often require weeks or months to restore just reel of a film. Deep learning and diffusion-based models offer a promising alternative by learning to reconstruct damaged sections while preserving the integrity of the original material. Generative models have demonstrated their ability to recover missing information in images, making them a suitable approach for film restoration.\\\\
+This project aims to develop a deep learning-based solution tailored to the specific characteristics of 1960s 35mm and 16mm film scans, as well as home video formats from the same period. The goal is to create a model that not only removes dirt and scratches but also ensures that the restored images retain their original texture and grain. To achieve this, the project will leverage state-of-the-art diffusion models and explore ways to condition them on temporal information from adjacent frames, allowing for more coherent and context-aware restorations.\\\\
+Ultimately, this project seeks to bridge the gap between traditional restoration techniques and modern AI-driven approaches, providing a tool that is both effective and accessible. In addition to developing and evaluating restoration models, the project will also focus on usability, designing an intuitive interface that allows users to visualize and interact with the restoration pipeline easily. Through these efforts, the project aims to contribute to the growing field of AI-assisted film preservation, offering a solution that can be extended to other film formats and historical archives in the future.
+\newpage
+	\section{Objectives}
+	\begin{table}[ht]
+		\centering
+		\begin{tabular}{|I|O|M|}
+			\hline
+			\textbf{ID} & \textbf{Task} & \textbf{Priority} \\ \hline
+			O1 & Propose a solution to \textbf{restore damaged scanned film reels.} The solution has to be able to restore damage like dirt or scratches on the film, but keep the characteristic grain of film images and videos. The solution will focus specifically on 1960s 35/16mm movie scans, as well as home videos of the same decade. & \textbf{Main objective} \\ \hline
+			O2 & Obtain a usable dataset to train restoration models based on common and real film damage.& \textbf{Essential} \\ \hline
+			O3 & Said solution has to be easy to use, as well as visually appealing.& \textbf{Essential} \\  \hline
+			O4 & Generalize the model as to be able to restore any type of film scans, not only the ones presented on O1.& \textbf{Not essential} \\ \hline
+		\end{tabular}
+		\caption{Summary of the objectives defining the project}
+	\end{table}
+	\subsection{Tasks}
+	\setlength{\arrayrulewidth}{.7 pt}
+	\begin{table}[ht]
+		\small
+		\centering
+		\begin{tabular}{|I|O|M|}
+			\hline
+			\textbf{ID} & \textbf{Task} & \textbf{Objective}\\ \hline
+			T1 & \textbf{Explore dataset options}. Research different resources to be used as dataset (ground truth or testing). By the end of this task there should be a trainable dataset. & \textit{O2} \\ \hline
+			T2 & \textbf{Create synthetic ground truth dataset} using real scanned film damage. &\textit{O2} \\ \hline 
+			T3 & \textbf{Segment} the damaged parts of a frame, without prior knowledge of said film. The proposed model should be able to segment all damaged parts of the film. & \textit{O1}\\ \hline
+			T4 & Propose a model to segment the damaged parts of a frame \textbf{having context of other frames} to bias the segmentation model. & \textit{O1} \\ \hline
+			T5 & Research about inpainting models and implement one to start testing the specific use case. & \textit{O1} \\ \hline
+			T5 & Modify an existing inpainting diffusion model in order to, providing context of other frames as a prompt, bias the generation to better adequate said generation to the ground truth.  & \textit{O1} \\ \hline
+			T6 & Explore different inpainting architectures to compare performance with the original chosen one.  & \textit{O1} \\ \hline
+			T7 & Implement a \textbf{graphical user interface} in order to provide an easy and catchy representation of all the parts of the final pipeline and showcase the results of the project in a tidy and usable way.  & \textit{O3}\\ \hline
+		\end{tabular}
+		\caption{Summary of the tasks defining the project}
+	\end{table}
+	\newpage
+	\section{Methodology}
+	This project will be developed by what in software development would be called agile development. This type of development is characterized with short work cycles, with predefined objectives (tickets) that have a clear deliverable in mind. For each work cycle, the objectives, as well as the deliverables, will be predefined in this initial report. Subsequently in the following Reports of Progress, a small report shall be written for each work cycle, detailing weather the objectives and deliverables have been met, with a pertinent reasoning in case of failure to do so. 
+	These work cycles will be marked by a weekly meeting with the tutor of the project, however this may not coincide with each start of work cycle, as the meeting schedule will be adjusted on a weekly basis. 
+	\section{State of the Art}
+	Diffusion-based models have emerged as a powerful tool in image generation. In the defined task for this project, image generation is a key aspect, since in order to restore an image, we need to generate the missing data from the image. 
+	Existing solutions include papers like DiffIR ~\cite{xia_diffir_2023}.
+	
+	\subsection{DiffIR}
+	DiffIR (Diffusion-based Image Restoration) introduces a diffusion-based image restoration pipeline, outperforming traditional CNNs by effectively handling various degradations, such as noise, blur and compression artifacts. To effectively achive this, DiffIR proposes a solution consisting of a compact image restoration prior extraction network (CPEN), which extracts a compact image restoration representation which encapsulates relevant priors for the restoration, a dynamic IR transformer (DIRformer), which restores low quality images using the prior representation given by the CPEN, and a de-noising network. 
+	
+	\section{Dataset}
+	Since the focus of the project is restoring film damage while keeping the characteristic grain of developed film, I cannot use the typical image restoration datasets, like LSDIR (reference) since it is focused on a super-resolution restoration, defeating one of the main, self-imposed, restrictions of my project. 
+	To achive the objective, I would need a dataset centred around film damage (dirt, hairs, scratches, etc. ). Online there is no robust existing dataset for said solution. 
+	
+	The only solution left would be to create my own dataset. There are two methodologies. The first one would be, given original and HQ damaged film scans, to label myself a dataset based on real images. The main problem with this solution is time, since it is very limited for my project. The second solution, which I have chosen, is to create a synthetic dataset using HQ non-damaged film scans. To create the synthetic dataset first I would need HQ isolated film damage to superimpose to the HQ images. FILM-AA ~\cite{ivanova23analogue} provides synthetic damage extracted from 4k scans of damaged film. This solution allows me to create synthetic masks to add to HQ images to create a suitable dataset for the task.
+	
+	Apart from the already stated benefits of said solution, it gives me the ability to tinker with what films I want to restore, so I can focus on the original objective. 
+	
+	\newpage
+	\section{Time Schedule}
+	\setlength{\arrayrulewidth}{.7 pt}
+	\begin{table}[ht!]
+		\centering
+		\begin{tabular}{|C|D|L|R|}
+			\hline
+			\textbf{Week} & \textbf{Date} & \textbf{Task Name} & \textbf{Deliverable} \\ \hline
+			1 & 27/01 - 02/02 & Read and research SOTA solutions & - \\ \hline
+			2 & 03/02 - 09/02 & Explore available online datasets (T1) & Dataset \\ \hline
+			3 & 10/02 - 16/02 & Implement and create a synthetic dataset (T2) & - \\ \hline
+			4 & 17/02 - 23/02 & Explore segmentation solutions to detect film damage (T3) & - \\ \hline
+			5 & 24/02 - 02/03 & T3 & Initial segmentation model results \\ \hline
+			6 & 03/03 - 09/03 & Prepare and redact the initial report delivery & Initial Report \\ \hline
+			\rowcolor{black}   % Black row with white text
+			\multicolumn{2}{|c|}{\textcolor{white}{10/03/2025}} & \multicolumn{2}{c|}{\textcolor{white}{\textbf{DUE INITIAL REPORT}}} \\ \hline
+			7 & 10/03 - 16/03 & Improve the synthetic dataset, T3, T4 & Result comparison \\ \hline
+			8 & 17/03 - 23/03 & Explore inpainting solutions and implement a starting model (T5) & - \\ \hline
+			9 & 24/03 - 30/03 & T5 & Initial inpainting model results \\ \hline
+			10 & 31/03 - 06/04 & Develop a solution to incorporate temporal bias into the inpainting diffusion model (T6) & - \\ \hline
+			11 & 07/04 - 13/04 & Prepare a dataset to train \textit{T6} model and train the model & Result comparison \\ \hline
+			12 & 14/04 - 20/04 & Prepare and redact Progress Report I & Progress Report I \\ \hline
+			\rowcolor{black}   % Black row with white text
+			\multicolumn{2}{|c|}{\textcolor{white}{20/04/2025}} & \multicolumn{2}{c|}{\textcolor{white}{\textbf{DUE PROGRESS REPORT I}}} \\ \hline
+			\textbf{Week} & \textbf{Date} & \textbf{Task Name} & \textbf{Deliverable} \\ \hline
+	13 & 21/04 - 27/04 & Explore different architectures for inpainting restoration (T7), T6 & - \\ \hline
+	14 & 28/04 - 04/05 & Train and/or test T7 models & Result comparison \\ \hline
+	15 & 05/05 - 11/05 & Prepare models for GUI (T8) & Model inference service \\ \hline
+	16 & 12/05 - 18/05 & T7, T8 & Final GUI \\ \hline
+	17 & 19/05 - 25/05 & Prepare and redact Progress Report II & Progress Report II \\ \hline
+	\rowcolor{black}   % Black row with white text
+	\multicolumn{2}{|c|}{\textcolor{white}{25/05/2025}} & \multicolumn{2}{c|}{\textcolor{white}{\textbf{DUE PROGRESS REPORT II}}} \\ \hline
+		\end{tabular}
+	\end{table}
+	
+	\begin{table}[ht!]
+		\centering
+		
+		\begin{tabular}{|C|D|L|R|}
+					\hline
+	
+	18 & 26/05 - 01/06 & Prepare and redact final report proposal & - \\ \hline
+	19 & 02/06 - 08/06 & Prepare and redact final report proposal & - \\ \hline
+	20 & 09/06 - 15/06 & Prepare and redact final report proposal & Final report proposal \\ \hline
+	\rowcolor{black}   % Black row with white text
+	\multicolumn{2}{|c|}{\textcolor{white}{15/06/2025}} & \multicolumn{2}{c|}{\textcolor{white}{\textbf{DUE FINAL REPORT PROPOSAL}}} \\ \hline
+	21 & 16/06 - 22/06 & Prepare presentation slides & Presentation \\ \hline
+	\rowcolor{black}   % Black row with white text
+	\multicolumn{2}{|c|}{\textcolor{white}{20/06/2025}} & \multicolumn{2}{c|}{\textcolor{white}{\textbf{DUE PRESENTATION PROPOSAL}}} \\ \hline
+	22 & 23/06 - 29/06 & Prepare final dossier & Dossier \\ \hline
+	\rowcolor{black}   % Black row with white text
+	\multicolumn{2}{|c|}{\textcolor{white}{29/06/2025}} & \multicolumn{2}{c|}{\textcolor{white}{\textbf{DUE FINAL DOSSIER}}} \\ \hline
+		\end{tabular}
+		\caption{Weekly Planning}
+	\end{table}
+	\newpage
+	\bibliography{references_initial}{}
+	\nocite{kaji_overview_2019}
+	\nocite{leejunhyun_leejunhyunimage_segmentation_2025}
+	\nocite{zhu_denoising_2023}
+	\nocite{xie_star_2025}
+	\nocite{xie_segformer_2021}
+	\bibliographystyle{plain}
+	\end{document}
+	
+	
