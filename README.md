@@ -25,7 +25,8 @@ Both methods aim to remove artifacts such as **dust, dirt, scratches, and burns*
 ---
 
 ##  Repository Structure
-<pre lang="markdown"> ```text TFG_Complete/                   # Main project directory
+<pre lang="markdown"> ```text 
+TFG_Complete/                   # Main project directory
 ├── Artifact_Creation/         # Scripts and modules to generate synthetic artifacts and datasets
 ├── Informes/                  # All official reports and documentation
 │   ├── InformeInicial/        # Initial project report with LaTeX sources
